@@ -60,7 +60,8 @@ CREATE TABLE `sys_role_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色和菜单关联表';
 
 -- 插入一条超管测试数据 (密码为明文 123456 加密后的 BCrypt 密文)
-INSERT INTO `sys_user` (`id`, `username`, `password`, `create_by`) VALUES (1, 'admin', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 'system');
+INSERT INTO `sys_user` (`id`, `username`, `password`, `create_by`) 
+		VALUES (1, 'admin', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 'system');
 
 
 
