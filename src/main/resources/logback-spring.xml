@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 1. 注册我们自定义的脱敏转换器，覆盖默认的 %msg 关键字 -->
+    <conversionRule conversionWord="msg" converterClass="com.rbac.config.SensitiveConverter" />
+
+    <!-- 2. 定义控制台输出格式 (使用了带有脱敏功能的 %msg) -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 格式：时间 [线程] 级别 类名 - 脱敏后的消息 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ========================================== -->
+    <!-- 开发环境 (dev) 策略：打印全量日志 + SQL + 脱敏 -->
+    <!-- ========================================== -->
+    <springProfile name="dev">
+        <!-- MyBatis Mapper 的 DEBUG 日志走 SLF4J → Logback → SensitiveConverter（脱敏） -->
+        <!-- 注意：如果 application-dev.yml 中配置了 StdOutImpl，SQL 行数据会同时走两条路：
+             (1) StdOutImpl → System.out（明文，本地调试可见）
+             (2) SLF4J → Logback → SensitiveConverter（脱敏后输出）
+             生产环境删除 StdOutImpl 即可，无需改动本 XML -->
+        <logger name="com.rbac.mapper" level="DEBUG"/>
+
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
+    <!-- ========================================== -->
+    <!-- 生产环境 (prod) 策略：只打印 WARN 及以上级别，静默 SQL -->
+    <!-- ========================================== -->
+    <springProfile name="prod">
+        <root level="WARN">
+            <appender-ref ref="STDOUT" />
+            <!-- 在真实企业中，这里通常还会加一个 FileAppender 把报错写进文件 -->
+        </root>
+    </springProfile>
+
+</configuration>

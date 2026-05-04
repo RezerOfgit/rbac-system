@@ -2,19 +2,14 @@ server:
   port: 8080
 
 spring:
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/rbac_system?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-    username: root
-    password: ${DB_PASSWORD:}
+  # 指定当前激活的配置文件，此处激活 application-dev.yml
+  profiles:
+    active: dev
 
 mybatis-plus:
   configuration:
     # 开启驼峰命名自动映射
     map-underscore-to-camel-case: true
-    # 控制台打印 SQL 语句，方便我们开发调试
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       # 全局逻辑删除配置 (0正常 1删除)，MyBatis-Plus 会在查询时自动加上 AND del_flag = 0
