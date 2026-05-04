@@ -64,9 +64,9 @@ INSERT INTO `sys_user` (`id`, `username`, `password`, `create_by`)
 		VALUES (1, 'admin', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 'system');
 
 
-
-
-
+UPDATE sys_user 
+SET password = '$2a$10$o3xJZdw6gaFH9i6TGBWB7.6d.xyr90XzM6Qwnsv1RqNuyhMl4hcHy' 
+WHERE username = 'admin';
 
 
 
