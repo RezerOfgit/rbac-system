@@ -1,12 +1,15 @@
 package com.rbac.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Re-zero
@@ -28,4 +31,10 @@ public class SysMenu implements Serializable {
     private Date createTime; //创建时间
     private Date updateTime; //更新时间
 
+    /**
+     * 子菜单列表（非数据库字段）
+     * @TableField(exist = false) 告诉 MyBatis-Plus 插入/查询时忽略这个字段
+     */
+    @TableField(exist = false)
+    private List<SysMenu> children = new ArrayList<>();
 }
