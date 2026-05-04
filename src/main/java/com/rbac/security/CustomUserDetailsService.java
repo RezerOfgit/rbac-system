@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rbac.entity.SysUser;
 import com.rbac.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,11 +18,19 @@ import java.util.List;
  * @version 1.0
  * 自定义用户加载服务：连接 Security 与数据库的桥梁
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final SysUserMapper sysUserMapper;
+
+    // ========== 临时调试开关 ==========
+    // 当动态权限数据库联表尚未完成时，使用此开关模拟不同权限场景
+    // true: admin 拥有所有权限 (*:*:*)     → 测试通过流
+    // false: admin 只有 sys:user:add       → 测试越权拦截 (403)
+    private static final boolean SUPER_ADMIN_MODE = true;
+    // =================================
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,8 +46,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // 3. 查询该用户的权限列表 (今天为了测试框架连通性，先给个写死的超级管理员权限，后续会替换为连表查询)
         List<String> permissions = new ArrayList<>();
+
         if ("admin".equals(username)) {
-            permissions.add("*:*:*"); // 模拟超管拥有所有权限
+            if (SUPER_ADMIN_MODE) {
+                permissions.add("*:*:*"); // true：全权限
+                log.info("admin 使用超级管理员模式 (*:*:*)");
+            } else {
+                permissions.add("sys:user:add"); // false：仅有添加权限，测试越权拦截 (403)
+                log.info("admin 使用受限模式 (sys:user:add)");
+            }
         }
 
         // 4. 将 SysUser 包装成 Security 认识的 LoginUser
