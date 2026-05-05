@@ -2,11 +2,11 @@
 import axios from 'axios';
 import { Message } from 'element-ui';
 
-// 1. 创建一个 axios 实例
 const service = axios.create({
-    // 配置你的后端 API 基础路径，假设后端运行在 8080 端口
-    baseURL: 'http://localhost:8080',
-    timeout: 5000 // 请求超时时间
+    // 【关键修改】：注释掉绝对路径，改为相对路径（或者直接写为空字符串）
+    // baseURL: 'http://localhost:8080',
+    baseURL: '', // 使用相对路径，触发 devServer 的代理拦截
+    timeout: 5000
 });
 
 // 2. 请求拦截器 (Request Interceptor) - 核心考点
