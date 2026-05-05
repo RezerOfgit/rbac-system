@@ -1,5 +1,6 @@
 package com.rbac.controller;
 
+import com.rbac.annotation.RequirePermi;
 import com.rbac.common.R;
 import com.rbac.dto.UserRoleAssignRequest;
 import com.rbac.entity.SysUser;
@@ -32,9 +33,9 @@ public class SysUserController {
      * 3. 如果返回 true，放行；返回 false，Spring Security 会抛出 AccessDeniedException，进而被我们封装的 R.forbidden() 拦截返回 403。
      */
     @GetMapping("/list")
-    @PreAuthorize("@ss.hasPermi('sys:user:list')")
+    // 删除原来的 @PreAuthorize("@ss.hasPermi('sys:user:list')")
+    @RequirePermi("sys:user:list") // 换成我们自己写的 AOP 注解
     public R<List<SysUser>> list() {
-        // 调用 MP 自带的 list() 方法查询所有未被逻辑删除的用户
         return R.ok(userService.list());
     }
 
