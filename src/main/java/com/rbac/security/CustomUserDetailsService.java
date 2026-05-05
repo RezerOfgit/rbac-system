@@ -1,8 +1,9 @@
 package com.rbac.security;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rbac.entity.SysUser;
 import com.rbac.mapper.SysUserMapper;
+import com.rbac.service.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,9 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Re-zero
- * @version 1.0
- * 自定义用户加载服务：连接 Security 与数据库的桥梁
+ * 自定义用户加载服务 (完全体)
  */
 @Slf4j
 @Service
@@ -24,40 +23,35 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final SysUserMapper sysUserMapper;
-
-    // ========== 临时调试开关 ==========
-    // 当动态权限数据库联表尚未完成时，使用此开关模拟不同权限场景
-    // true: admin 拥有所有权限 (*:*:*)     → 测试通过流
-    // false: admin 只有 sys:user:add       → 测试越权拦截 (403)
-    private static final boolean SUPER_ADMIN_MODE = true;
-    // =================================
+    // 注入菜单服务，用于查询真实权限
+    private final SysMenuService sysMenuService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 1. 从数据库中查询用户信息 (MyBatis-Plus 的 LambdaQuery 语法)
+        // 1. 查询用户本体
         SysUser user = sysUserMapper.selectOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
+                new QueryWrapper<SysUser>().eq("username", username)
         );
 
-        // 2. 如果没找到用户，抛出异常
         if (user == null) {
-            throw new UsernameNotFoundException("用户名或密码错误"); // 为了安全，不提示"用户不存在"
+            log.warn("登录失败，找不到用户名: {}", username);
+            throw new UsernameNotFoundException("用户名或密码错误");
         }
 
-        // 3. 查询该用户的权限列表 (今天为了测试框架连通性，先给个写死的超级管理员权限，后续会替换为连表查询)
+        // 2. 动态加载该用户的真实权限列表
         List<String> permissions = new ArrayList<>();
 
-        if ("admin".equals(username)) {
-            if (SUPER_ADMIN_MODE) {
-                permissions.add("*:*:*"); // true：全权限
-                log.info("admin 使用超级管理员模式 (*:*:*)");
-            } else {
-                permissions.add("sys:user:add"); // false：仅有添加权限，测试越权拦截 (403)
-                log.info("admin 使用受限模式 (sys:user:add)");
-            }
+        // 3. 企业级标准逻辑：超级管理员放行，普通用户查库
+        if ("admin".equals(user.getUsername())) {
+            permissions.add("*:*:*");
+            log.info("超级管理员 [admin] 登录，赋予全局通配符权限");
+        } else {
+            // 调用我们刚刚写的连表查询，获取该普通用户真实被分配的权限
+            permissions = sysMenuService.getPermsByUserId(user.getId());
+            log.info("普通用户 [{}] 登录，从数据库成功加载 {} 条权限", username, permissions.size());
         }
 
-        // 4. 将 SysUser 包装成 Security 认识的 LoginUser
+        // 4. 将查到的用户信息和真实权限列表打包成 Security 需要的 LoginUser
         return new LoginUser(user, permissions);
     }
 }

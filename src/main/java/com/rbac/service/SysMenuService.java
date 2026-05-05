@@ -14,4 +14,9 @@ public interface SysMenuService extends IService<SysMenu> {
      * 获取菜单树形列表
      */
     List<SysMenu> buildMenuTree();
+
+    /**
+     * 根据用户ID获取权限标识列表
+     */
+    List<String> getPermsByUserId(Long userId);
 }

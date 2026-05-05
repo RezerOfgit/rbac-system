@@ -68,11 +68,32 @@ UPDATE sys_user
 SET password = '$2a$10$o3xJZdw6gaFH9i6TGBWB7.6d.xyr90XzM6Qwnsv1RqNuyhMl4hcHy' 
 WHERE username = 'admin';
 
+-- 1. 插入顶级目录：系统管理 (id = 1, parent_id = 0)
+INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`) 
+VALUES (1, '系统管理', 0, 1, '/system', 'M', '', 'admin');
 
+-- 2. 插入子菜单：用户管理 (id = 2, parent_id = 1, 归属于“系统管理”)
+INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`) 
+VALUES (2, '用户管理', 1, 1, '/system/user', 'C', 'sys:user:list', 'admin');
 
+-- 3. 插入子菜单：角色管理 (id = 3, parent_id = 1, 归属于“系统管理”)
+INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`) 
+VALUES (3, '角色管理', 1, 2, '/system/role', 'C', 'sys:role:list', 'admin');
 
+-- 1. 创建一个普通用户 (账号: testuser, 密码: 123456 的 BCrypt 密文)
+INSERT INTO `sys_user` (`id`, `username`, `password`, `create_by`) 
+VALUES (2, 'testuser', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 'admin');
 
+-- 2. 创建一个普通角色 (例如: 普通员工)
+INSERT INTO `sys_role` (`id`, `role_name`, `role_key`, `create_by`) 
+VALUES (2, '普通员工', 'common', 'admin');
 
+-- 3. 将 testuser(id=2) 和 普通员工角色(id=2) 关联起来
+INSERT INTO `sys_user_role` (`user_id`, `role_id`) VALUES (2, 2);
+
+UPDATE sys_user 
+SET password = '$2a$10$zFdTpFKp/dYlpC0Muo4.3Of/wGlbu.fHPWs0rZZ3UzS0qw0Pbobd2' 
+WHERE username = 'testuser';
 
 
 

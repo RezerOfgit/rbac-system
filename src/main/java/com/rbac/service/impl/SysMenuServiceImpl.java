@@ -50,4 +50,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 })
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<String> getPermsByUserId(Long userId) {
+        return baseMapper.selectPermsByUserId(userId);
+    }
 }
