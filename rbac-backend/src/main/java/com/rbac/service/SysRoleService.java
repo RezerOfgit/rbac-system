@@ -6,19 +6,15 @@ import com.rbac.entity.SysRole;
 import java.util.List;
 
 /**
+ * 角色业务接口。
  * @author Re-zero
  * @version 1.0
- * 角色业务接口
  */
 public interface SysRoleService extends IService<SysRole> {
 
-    /**
-     * 根据角色ID获取其对应的所有菜单ID
-     */
+    /** 根据角色 ID 查询关联的菜单 ID 列表 */
     List<Long> getRoleMenuIds(Long roleId);
 
-    /**
-     * 给角色分配菜单权限
-     */
+    /** 为角色分配菜单权限 */
     void assignMenuToRole(Long roleId, List<Long> menuIds);
 }

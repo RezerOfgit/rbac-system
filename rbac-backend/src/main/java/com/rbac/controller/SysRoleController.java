@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
+ * 角色管理接口，提供角色的增删查及菜单权限分配。
  * @author Re-zero
  * @version 1.0
- * 系统角色控制器
  */
 @RestController
 @RequestMapping("/api/role")
@@ -22,18 +22,14 @@ public class SysRoleController {
 
     private final SysRoleService roleService;
 
-    /**
-     * 查询角色列表
-     */
+    /** 查询角色列表 */
     @GetMapping("/list")
     @PreAuthorize("@ss.hasPermi('sys:role:list')")
     public R<List<SysRole>> list() {
         return R.ok(roleService.list());
     }
 
-    /**
-     * 新增角色
-     */
+    /** 新增角色 */
     @PostMapping("/add")
     @PreAuthorize("@ss.hasPermi('sys:role:add')")
     public R<Void> add(@RequestBody SysRole role) {
@@ -41,9 +37,7 @@ public class SysRoleController {
         return R.ok();
     }
 
-    /**
-     * 给角色分配菜单权限（极其关键！）
-     */
+    /** 为角色分配菜单权限 */
     @PostMapping("/assignMenu")
     @PreAuthorize("@ss.hasPermi('sys:role:assign')")
     public R<Void> assignMenu(@RequestBody RoleMenuAssignRequest request) {

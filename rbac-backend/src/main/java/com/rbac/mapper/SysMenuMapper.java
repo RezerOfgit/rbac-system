@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
+ * 菜单 Mapper。
  * @author Re-zero
  * @version 1.0
  */
@@ -16,8 +17,8 @@ import java.util.List;
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     /**
-     * 面试高频考点：RBAC 的核心连表 SQL
-     * 根据用户ID，跨越 sys_user_role 和 sys_role_menu 三表联查，获取该用户拥有的所有权限标识
+     * 根据用户 ID 三表联查，获取该用户拥有的所有权限标识。
+     * 关联路径：sys_user_role -> sys_role_menu -> sys_menu
      */
     @Select("SELECT DISTINCT m.perms " +
             "FROM sys_menu m " +

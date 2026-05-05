@@ -5,6 +5,7 @@ import com.rbac.entity.SysUserRole;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
+ * 用户-角色关联 Mapper。
  * @author Re-zero
  * @version 1.0
  */

@@ -25,7 +25,7 @@
 </template>
 
 <script>
-// 引入我们上一节封装好的 axios 实例
+// 引入已封装的 axios 实例
 import request from '@/utils/request';
 
 export default {
@@ -51,9 +51,8 @@ export default {
             if (res.code === 200) {
               this.$message.success('登录成功');
 
-              // 【核心逻辑】：将 Token 和权限列表保存到浏览器的 LocalStorage 中
+              // 持久化 Token 和权限列表，供请求拦截器和 v-hasPermi 指令使用
               localStorage.setItem('jwt_token', res.data.token);
-              // 注意：权限数组需要转换成 JSON 字符串才能存入 localStorage
               localStorage.setItem('permissions', JSON.stringify(res.data.permissions));
 
               // 跳转到系统首页

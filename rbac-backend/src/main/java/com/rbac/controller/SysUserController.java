@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
+ * 用户管理接口，提供用户的增删查及角色分配。
  * @author Re-zero
  * @version 1.0
- * 系统用户控制器
  */
 @RestController
 @RequestMapping("/api/user")
@@ -23,50 +23,35 @@ import java.util.List;
 public class SysUserController {
 
     private final SysUserService userService;
-    private final PasswordEncoder passwordEncoder; // 用于新增用户时加密密码
+    private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 查询用户列表
-     * @PreAuthorize("@ss.hasPermi('sys:user:list')") 解析：
-     * 1. @ss 代表调用 Spring 容器中名为 ss 的 Bean（即我们的 PermissionService）
-     * 2. 执行它的 hasPermi 方法，传入 'sys:user:list'
-     * 3. 如果返回 true，放行；返回 false，Spring Security 会抛出 AccessDeniedException，进而被我们封装的 R.forbidden() 拦截返回 403。
-     */
+    /** 查询用户列表（使用自定义 @RequirePermi 注解校验权限） */
     @GetMapping("/list")
-    // 删除原来的 @PreAuthorize("@ss.hasPermi('sys:user:list')")
-    @RequirePermi("sys:user:list") // 换成我们自己写的 AOP 注解
+    @RequirePermi("sys:user:list")
     public R<List<SysUser>> list() {
         return R.ok(userService.list());
     }
 
-    /**
-     * 新增用户
-     */
+    /** 新增用户 */
     @PostMapping("/add")
     @PreAuthorize("@ss.hasPermi('sys:user:add')")
     public R<Void> add(@RequestBody SysUser user) {
-        // 实际开发中还需要校验用户名是否重复等逻辑，这里先跑通核心流程
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
         return R.ok();
     }
 
-    /**
-     * 删除用户
-     */
+    /** 删除用户（MyBatis-Plus 自动转为逻辑删除） */
     @DeleteMapping("/{id}")
     @PreAuthorize("@ss.hasPermi('sys:user:delete')")
     public R<Void> delete(@PathVariable Long id) {
-        // MP 会自动将其转化为逻辑删除 UPDATE del_flag = 1
         userService.removeById(id);
         return R.ok();
     }
 
-    /**
-     * 给用户分配角色
-     */
+    /** 为用户分配角色 */
     @PostMapping("/assignRole")
-    @PreAuthorize("@ss.hasPermi('sys:user:assign')") // 加上权限锁
+    @PreAuthorize("@ss.hasPermi('sys:user:assign')")
     public R<Void> assignRole(@RequestBody UserRoleAssignRequest request) {
         userService.assignRoleToUser(request.getUserId(), request.getRoleIds());
         return R.ok();

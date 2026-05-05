@@ -5,27 +5,32 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 统一 API 响应结果封装。
  * @author Re-zero
  * @version 1.0
- * 统一 API 响应结果封装
- * @param <T>
+ * @param <T> 响应数据类型
  */
 @Data
 public class R<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer code; //业务状态码 (200 成功, 4xx 客户端异常, 5xx 服务端异常)
-    private String message; //提示信息
-    private T data; //响应数据
-    private long timestamp; //请求时间戳，方便追溯和调试
+    /** 业务状态码，200 成功，4xx 客户端异常，5xx 服务端异常 */
+    private Integer code;
 
-    // 私有构造器，强制使用静态工厂方法
+    /** 提示信息 */
+    private String message;
+
+    /** 响应数据 */
+    private T data;
+
+    /** 请求时间戳 */
+    private long timestamp;
+
     private R() {
         this.timestamp = System.currentTimeMillis();
     }
 
-    // 成功响应
     public static <T> R<T> ok() {
         return ok(null);
     }
@@ -38,7 +43,6 @@ public class R<T> implements Serializable {
         return r;
     }
 
-    // 失败响应
     public static <T> R<T> fail(int code, String message) {
         R<T> r = new R<>();
         r.setCode(code);
@@ -50,7 +54,6 @@ public class R<T> implements Serializable {
         return fail(500, message);
     }
 
-    // 针对 Security 权限校验的专属快捷方法
     public static <T> R<T> unauthorized(String message) {
         return fail(401, message);
     }

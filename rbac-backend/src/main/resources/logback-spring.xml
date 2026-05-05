@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 1. 注册我们自定义的脱敏转换器，覆盖默认的 %msg 关键字 -->
+    <!-- 注册自定义脱敏转换器，覆盖默认 %msg -->
     <conversionRule conversionWord="msg" converterClass="com.rbac.config.SensitiveConverter" />
 
-    <!-- 2. 定义控制台输出格式 (使用了带有脱敏功能的 %msg) -->
+    <!-- 定义控制台输出格式 (使用了带有脱敏功能的 %msg) -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- 格式：时间 [线程] 级别 类名 - 脱敏后的消息 -->
@@ -33,7 +33,6 @@
     <springProfile name="prod">
         <root level="WARN">
             <appender-ref ref="STDOUT" />
-            <!-- 在真实企业中，这里通常还会加一个 FileAppender 把报错写进文件 -->
         </root>
     </springProfile>
 

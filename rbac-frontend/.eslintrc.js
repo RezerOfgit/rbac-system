@@ -14,7 +14,7 @@ module.exports = {
     rules: {
         'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-        // 【添加下面这一行】关闭组件名必须为多单词的警告
+        // 关闭组件名必须为多单词的警告
         'vue/multi-word-component-names': 'off'
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
+ * 菜单管理接口，提供菜单树查询及菜单的增删改操作。
  * @author Re-zero
  * @version 1.0
  */
@@ -20,25 +21,18 @@ public class SysMenuController {
 
     private final SysMenuService menuService;
 
-    /**
-     * 获取菜单树形结构
-     * 这个接口供前端页面渲染左侧菜单栏使用
-     */
+    /** 获取菜单树，供前端渲染侧边栏 */
     @GetMapping("/tree")
     @PreAuthorize("@ss.hasPermi('sys:menu:list')") // 这里依然加锁保护
     public R<List<SysMenu>> getMenuTree() {
         return R.ok(menuService.buildMenuTree());
     }
 
-    /**
-     * 新增菜单
-     */
+    /** 新增菜单 */
     @PostMapping("/add")
     @PreAuthorize("@ss.hasPermi('sys:menu:add')")
     public R<Void> add(@RequestBody SysMenu sysMenu) {
         menuService.save(sysMenu);
         return R.ok();
     }
-
-    // update 和 delete 逻辑与 user 类似，为了聚焦核心，这里暂略，后续可随时补全
 }

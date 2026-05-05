@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Security 认证用户详情，封装用户信息及权限列表，
+ * 实现 {@link UserDetails} 以适配 Security 认证流程。
  * @author Re-zero
  * @version 1.0
- * Spring Security 认证用户详情对象
  */
 @Data
 @NoArgsConstructor
@@ -23,7 +24,7 @@ public class LoginUser implements UserDetails {
 
     private SysUser user;
 
-    // 存储该用户对应的所有权限标识 (如: ["sys:user:add", "sys:user:delete"])
+    /** 权限标识列表，如 sys:user:add、sys:user:delete */
     private List<String> permissions;
 
     public LoginUser(SysUser user, List<String> permissions) {
@@ -31,10 +32,8 @@ public class LoginUser implements UserDetails {
         this.permissions = permissions;
     }
 
-    /**
-     * 将我们数据库里的权限标识，转换为 Security 需要的 GrantedAuthority 对象
-     */
-    @JsonIgnore // 序列化时忽略，避免存入 Redis 时报错
+    /** 将权限标识列表转换为 Security 所需的 GrantedAuthority 集合 */
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (permissions == null || permissions.isEmpty()) {
@@ -56,29 +55,27 @@ public class LoginUser implements UserDetails {
         return user.getUsername();
     }
 
-    // 下面四个方法是账号状态校验，简单起见我们直接关联 SysUser 的 status
-
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
-        return true; // 账号是否未过期
+        return true;
     }
 
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
-        return user.getStatus() == 1; // 账号是否未锁定 (1正常 0停用)
+        return user.getStatus() == 1;
     }
 
     @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // 密码是否未过期
+        return true;
     }
 
     @JsonIgnore
     @Override
     public boolean isEnabled() {
-        return user.getDelFlag() == 0; // 账号是否可用 (逻辑删除标志)
+        return user.getDelFlag() == 0;
     }
 }

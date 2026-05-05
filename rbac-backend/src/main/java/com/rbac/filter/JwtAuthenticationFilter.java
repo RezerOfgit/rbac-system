@@ -19,10 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * JWT 认证过滤器。
+ * 继承 OncePerRequestFilter，保证单次请求链路中该过滤器仅执行一次。
+ * 负责从请求头中解析 JWT，验证其有效性，并将认证信息写入 SecurityContextHolder。
  * @author Re-zero
  * @version 1.0
- * JWT 核心拦截器
- * 继承 OncePerRequestFilter，确保在一次请求中只通过一次该过滤器
  */
 @Slf4j
 @Component
@@ -36,34 +37,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            // 1. 从请求头中获取 JWT Token
             String jwt = getJwtFromRequest(request);
 
-            // 2. 如果 Token 存在且验证合法
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 
-                // 3. 解析 Token 获取用户名
                 String username = tokenProvider.getUsernameFromToken(jwt);
 
-                // 4. 从数据库加载用户详细信息（包含权限）
+                // 加载用户信息（含权限列表）
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // 5. 将用户信息封装成 Security 认识的 Authentication 对象
+                // 构造 Authentication 对象并写入 SecurityContextHolder，
+                // Security 框架据此判定当前请求已完成身份认证
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
-                // 记录请求的详细信息（如 IP 地址等）
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 6. 将 Authentication 存入 SecurityContextHolder
-                // 这步极其关键，Security 只要在 Context 中看到了这个对象，就认为当前请求已经登录验证通过了
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
             log.error("无法在 Security Context 中设置用户认证信息", e);
         }
 
-        // 7. 无论有没有解析出 Token，都必须放行给下一个过滤器（交给 Security 去做最终裁决）
+        // 请求必须继续传递，后续由 Security 框架完成鉴权决策
         filterChain.doFilter(request, response);
     }
 

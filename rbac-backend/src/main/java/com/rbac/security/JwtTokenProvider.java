@@ -10,46 +10,40 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
+ * JWT 令牌工具类，负责 Token 的生成、解析与校验。
  * @author Re-zero
  * @version 1.0
- * JWT 令牌生成与解析工具类
  */
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
-    // 密钥 (注意：jjwt 0.11.x 要求 HMAC-SHA256 算法的密钥长度必须 >= 256 bit，即至少 32 个英文字符)
+    // jjwt 0.11.x 要求 HMAC-SHA256 密钥长度 >= 256 bit
     private final String SECRET = "RbacSystemSuperSecretKeyWithMoreThan32Characters";
 
-    // 过期时间：默认 24 小时 (毫秒)
+    /** 过期时间（毫秒），当前为 24 小时 */
     private final long EXPIRATION = 86400000L;
 
-    /**
-     * 生成安全的签名密钥
-     */
+    /** 生成安全的签名密钥 */
     private SecretKey getSigningKey() {
         byte[] keyBytes = SECRET.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * 根据用户名生成 Token
-     */
+    /** 根据用户名签发 Token */
     public String generateToken(String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION);
 
         return Jwts.builder()
-                .setSubject(username)       // 将用户名存入载荷 (Payload)
-                .setIssuedAt(now)           // 签发时间
-                .setExpiration(expiryDate)  // 过期时间
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // 签名
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    /**
-     * 从 Token 中提取用户名
-     */
+    /** 从 Token 中解析用户名 */
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -59,9 +53,7 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    /**
-     * 校验 Token 是否合法
-     */
+    /** 校验 Token 合法性，无效时返回 false */
     public boolean validateToken(String authToken) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);

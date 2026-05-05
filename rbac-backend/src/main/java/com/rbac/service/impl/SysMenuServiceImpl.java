@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 菜单业务实现。
  * @author Re-zero
  * @version 1.0
  */
@@ -18,13 +19,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<SysMenu> buildMenuTree() {
-        // 1. 查询出数据库中所有的菜单数据（平时开发中这里可能需要加上按 order_num 排序）
+
         List<SysMenu> allMenus = this.list();
 
-        // 2. 找到所有的顶级节点（parent_id 为 0 的通常是顶级目录）
+        // 筛选顶级节点（parentId == 0），递归填充子节点
         return allMenus.stream()
                 .filter(menu -> menu.getParentId() == 0L)
-                // 3. 针对每一个顶级节点，去寻找它的子节点
                 .map(menu -> {
                     menu.setChildren(getChildren(menu, allMenus));
                     return menu;
@@ -33,17 +33,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     /**
-     * 递归寻找子节点
-     *
-     * @param root 当前的父节点
-     * @param allMenus 所有的菜单集合
-     * @return 属于该父节点的子节点集合
+     * 递归查找当前节点的子菜单。
+     * @param root     当前父节点
+     * @param allMenus 全量菜单列表
+     * @return 子节点列表
      */
     private List<SysMenu> getChildren(SysMenu root, List<SysMenu> allMenus) {
         return allMenus.stream()
-                // 过滤出父ID等于当前节点ID的菜单
                 .filter(menu -> menu.getParentId().equals(root.getId()))
-                // 递归调用，继续寻找子节点的子节点
                 .map(menu -> {
                     menu.setChildren(getChildren(menu, allMenus));
                     return menu;

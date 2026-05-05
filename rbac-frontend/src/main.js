@@ -3,15 +3,14 @@ import Vue from 'vue';
 import App from './App.vue';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import router from './router'; // <-- 引入刚才写的路由配置
+import router from './router';
 
-// 1. 引入刚刚写好的自定义指令
 import hasPermi from './directive/hasPermi';
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 
-// 2. 全局注册 v-hasPermi 指令
+// 注册按钮级权限指令 v-hasPermi
 Vue.directive('hasPermi', hasPermi);
 
 new Vue({

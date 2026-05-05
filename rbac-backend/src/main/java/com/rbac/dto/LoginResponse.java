@@ -7,18 +7,18 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
+ * 登录响应参数。
  * @author Re-zero
  * @version 1.0
- * 登录响应对象
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResponse {
 
-    // JWT Token，前端需要将其保存在 localStorage 或 sessionStorage 中
+    /** JWT Token */
     private String token;
 
-    // 用户的权限标识列表，前端可根据此列表动态渲染菜单和按钮
+    /** 权限标识列表，用于前端动态渲染菜单和按钮 */
     private List<String> permissions;
 }

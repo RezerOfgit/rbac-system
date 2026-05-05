@@ -2,17 +2,14 @@ server:
   port: 8080
 
 spring:
-  # 指定当前激活的配置文件，此处激活 application-dev.yml
   profiles:
     active: dev
 
 mybatis-plus:
   configuration:
-    # 开启驼峰命名自动映射
     map-underscore-to-camel-case: true
   global-config:
     db-config:
-      # 全局逻辑删除配置 (0正常 1删除)，MyBatis-Plus 会在查询时自动加上 AND del_flag = 0
       logic-delete-field: delFlag
       logic-delete-value: 1
       logic-not-delete-value: 0

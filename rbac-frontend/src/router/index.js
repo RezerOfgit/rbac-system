@@ -3,7 +3,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { Message } from 'element-ui';
 
-// 告诉 Vue 使用 VueRouter 插件
 Vue.use(VueRouter);
 
 // 定义路由规则
@@ -26,7 +25,7 @@ const router = new VueRouter({
     routes
 });
 
-// 全局前置路由守卫（前端的拦截器）
+// 全局前置守卫：未登录时强制跳转至登录页
 router.beforeEach((to, from, next) => {
     // 尝试获取本地存储的 token
     const token = localStorage.getItem('jwt_token');

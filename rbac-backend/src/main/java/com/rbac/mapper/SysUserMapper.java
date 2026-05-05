@@ -5,10 +5,10 @@ import com.rbac.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
+ * 用户 Mapper。
  * @author Re-zero
  * @version 1.0
  */
-@Mapper //这是一个 Mapper 接口，需要交由 Spring 容器管理
+@Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
-    //继承了 BaseMapper，insert, deleteById, updateById, selectById 等几十个单表方法！无需写 SQL！
 }

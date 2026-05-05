@@ -3,13 +3,11 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 const service = axios.create({
-    // 【关键修改】：注释掉绝对路径，改为相对路径（或者直接写为空字符串）
-    // baseURL: 'http://localhost:8080',
     baseURL: '', // 使用相对路径，触发 devServer 的代理拦截
     timeout: 5000
 });
 
-// 2. 请求拦截器 (Request Interceptor) - 核心考点
+// 请求拦截器：自动在请求头中携带 JWT Token
 service.interceptors.request.use(
     config => {
         // 尝试从本地存储中获取我们在登录成功后保存的 Token
@@ -26,13 +24,13 @@ service.interceptors.request.use(
     }
 );
 
-// 3. 响应拦截器 (Response Interceptor)
+// 响应拦截器：统一处理业务状态码和 HTTP 异常
 service.interceptors.response.use(
     response => {
         // 拿到后端返回的封装数据 R
         const res = response.data;
 
-        // 如果后端的 code 不是 200，说明业务线报错或权限不足
+        // code 非 200 视为业务异常
         if (res.code !== 200) {
             Message({
                 message: res.message || '系统错误',

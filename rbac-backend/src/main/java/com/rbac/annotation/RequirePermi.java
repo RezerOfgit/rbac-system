@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 自定义权限校验注解，标注在需要鉴权的方法上。
  * @author Re-zero
  * @version 1.0
- * 自定义权限校验注解
  */
-@Target(ElementType.METHOD) // 表明该注解只能用于方法上
-@Retention(RetentionPolicy.RUNTIME) // 表明该注解在运行时有效，可以通过反射获取
+@Target(ElementType.METHOD)  // 仅限方法级别使用
+@Retention(RetentionPolicy.RUNTIME) // 运行时保留，支持反射读取
 public @interface RequirePermi {
 
     /**

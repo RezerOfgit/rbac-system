@@ -2,12 +2,12 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # 这里是你的本地数据库配置
     url: jdbc:mysql://127.0.0.1:3306/rbac_system?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
     username: root
     password: ${DB_PASSWORD:}
 
 mybatis-plus:
   configuration:
-    # 仅在开发环境开启 SQL 打印，方便我们排查 Bug
+    # 仅在开发环境开启 SQL 打印，方便排查 Bug
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

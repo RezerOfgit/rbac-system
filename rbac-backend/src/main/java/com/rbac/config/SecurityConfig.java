@@ -17,29 +17,26 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
+ * Spring Security 核心配置。
+ * 采用无状态会话 + JWT 认证方案，禁用 CSRF 和 Session。
  * @author Re-zero
  * @version 1.0
- * Spring Security 核心配置类
  */
 @Configuration
 @EnableWebSecurity
-// 开启基于注解的细粒度权限控制 (如 @PreAuthorize)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * 配置密码加密器 (数据库里的密码必须是密文)
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     /**
-     * 暴露 AuthenticationManager，后续在 LoginController 中需要用它来主动触发账号密码校验
+     * 暴露 AuthenticationManager，供登录接口主动触发账号密码校验。
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -47,30 +44,25 @@ public class SecurityConfig {
     }
 
     /**
-     * 配置 Security 过滤链规则
+     * 配置 Security 过滤链。
+     * 规则优先级：从上到下依次匹配，首个命中的规则生效。
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. 关闭 CSRF 跨站请求伪造防护（前后端分离项目不需要，因为我们不用 Cookie 传 Token）
+                // 禁用 CSRF：前后端分离项目通过 Token 认证，不依赖 Cookie，无需 CSRF 防护
                 .csrf().disable()
-
-                // 2. 开启跨域支持
                 .cors().and()
 
-                // 3. 将 Session 策略设置为无状态模式（Security 不再使用 Session 保存安全上下文）
+                // 无状态会话：不使用 Session 保存安全上下文
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-                // 4. 配置请求拦截规则
                 .authorizeRequests()
-                // 对于登录接口，允许匿名访问 (所有人都能点登录)
                 .antMatchers("/api/auth/login").permitAll()
-                // 允许前端发送跨域的 OPTIONS 预检请求
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // 其他所有请求都必须认证（登录）后才能访问
                 .anyRequest().authenticated();
 
-        // 5. 将我们自定义的 JWT 过滤器，放到 Security 默认的账号密码校验过滤器之前
+        // 将 JWT 过滤器置于 UsernamePasswordAuthenticationFilter 之前
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

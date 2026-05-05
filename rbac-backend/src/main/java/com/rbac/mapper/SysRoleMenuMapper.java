@@ -5,6 +5,7 @@ import com.rbac.entity.SysRoleMenu;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
+ * 角色-菜单关联 Mapper。
  * @author Re-zero
  * @version 1.0
  */

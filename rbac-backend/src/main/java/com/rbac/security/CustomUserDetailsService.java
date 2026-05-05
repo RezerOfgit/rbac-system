@@ -15,7 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 自定义用户加载服务 (完全体)
+ * 自定义用户加载服务，实现 {@link UserDetailsService}。
+ * 根据用户名查询用户信息及权限列表，封装为 {@link LoginUser} 返回给 Security 框架。
+ * @author Re-zero
+ * @version 1.0
  */
 @Slf4j
 @Service
@@ -23,12 +26,12 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final SysUserMapper sysUserMapper;
-    // 注入菜单服务，用于查询真实权限
+
     private final SysMenuService sysMenuService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 1. 查询用户本体
+
         SysUser user = sysUserMapper.selectOne(
                 new QueryWrapper<SysUser>().eq("username", username)
         );
@@ -38,20 +41,17 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
 
-        // 2. 动态加载该用户的真实权限列表
         List<String> permissions = new ArrayList<>();
 
-        // 3. 企业级标准逻辑：超级管理员放行，普通用户查库
+        // 超级管理员拥有全局通配权限，普通用户从数据库查询
         if ("admin".equals(user.getUsername())) {
             permissions.add("*:*:*");
             log.info("超级管理员 [admin] 登录，赋予全局通配符权限");
         } else {
-            // 调用我们刚刚写的连表查询，获取该普通用户真实被分配的权限
             permissions = sysMenuService.getPermsByUserId(user.getId());
             log.info("普通用户 [{}] 登录，从数据库成功加载 {} 条权限", username, permissions.size());
         }
 
-        // 4. 将查到的用户信息和真实权限列表打包成 Security 需要的 LoginUser
         return new LoginUser(user, permissions);
     }
 }
