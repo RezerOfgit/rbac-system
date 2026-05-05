@@ -1,6 +1,7 @@
 package com.rbac.controller;
 
 import com.rbac.common.R;
+import com.rbac.dto.UserRoleAssignRequest;
 import com.rbac.entity.SysUser;
 import com.rbac.service.SysUserService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,16 @@ public class SysUserController {
     public R<Void> delete(@PathVariable Long id) {
         // MP 会自动将其转化为逻辑删除 UPDATE del_flag = 1
         userService.removeById(id);
+        return R.ok();
+    }
+
+    /**
+     * 给用户分配角色
+     */
+    @PostMapping("/assignRole")
+    @PreAuthorize("@ss.hasPermi('sys:user:assign')") // 加上权限锁
+    public R<Void> assignRole(@RequestBody UserRoleAssignRequest request) {
+        userService.assignRoleToUser(request.getUserId(), request.getRoleIds());
         return R.ok();
     }
 }
