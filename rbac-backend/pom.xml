@@ -11,9 +11,9 @@
     </parent>
 
     <groupId>com.rbac</groupId>
-    <artifactId>rbac-system</artifactId>
+    <artifactId>rbac-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>rbac-system</name>
+    <name>rbac-backend</name>
     <description>企业级 RBAC 权限管理系统</description>
 
     <properties>
