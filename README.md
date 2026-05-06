@@ -49,6 +49,7 @@ rbac-system/
     - **接口级**：自定义 `@RequirePermi` 注解配合 Spring AOP 切面，精确拦截 Controller 方法。权限不足时返回 403。
     - **按钮级**：基于 Vue 自定义 `v-hasPermi` 指令，根据权限标识控制 DOM 元素的渲染。
     - **通配符放行**：支持 `*:*:*` 超级管理员权限，开发调试无需频繁赋权。
+    - **数据级**：通过 `SecurityUtils` 工具类实现平行越权校验，普通用户只能操作自己的数据，超级管理员账号受保护禁止删除。
 - **多环境日志隔离** — 开发环境全量 SQL 打印，生产环境仅 WARN 以上级别。预留 Logback 脱敏 Converter。
 - **统一响应封装** — `R<T>` 统一返回 `code/message/data/timestamp`，语义化静态方法降低 Controller 层冗余代码。
 - **数据库初始化脚本** — 包含 5 张表结构 + 默认管理员账号 + 测试数据，一键建库跑通全流程。
@@ -138,8 +139,8 @@ npm run serve
 | POST | `/api/auth/login` | 无 | 登录，返回 JWT Token 及权限列表 |
 | GET | `/api/user/list` | `sys:user:list` | 查询用户列表 |
 | POST | `/api/user/add` | `sys:user:add` | 新增用户 |
-| PUT | `/api/user/update` | `sys:user:update` | 修改用户信息 |
-| DELETE | `/api/user/{id}` | `sys:user:delete` | 删除用户 |
+| PUT | `/api/user/update` | `sys:user:update` | 修改用户信息（非管理员仅可修改自己） |
+| DELETE | `/api/user/{id}` | `sys:user:delete` | 删除用户（禁止删除超级管理员，非管理员仅可删除自己） |
 | POST | `/api/user/assignRole` | `sys:user:assign` | 为用户分配角色 |
 | GET | `/api/role/list` | `sys:role:list` | 查询角色列表 |
 | POST | `/api/role/add` | `sys:role:add` | 新增角色 |

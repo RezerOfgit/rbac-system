@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     public R<?> handleAccessDeniedException(AccessDeniedException e) {
         log.warn("越权访问拦截: {}", e.getMessage());
         // 使用我们在 R.java 中封装的 forbidden 语义化方法
-        return R.forbidden("权限不足，不允许访问此接口");
+        return R.forbidden(e.getMessage());
     }
 
     /** 兜底：未预期的系统异常 */

@@ -41,11 +41,19 @@ public class SysUserController {
         return R.ok();
     }
 
-    /** 删除用户（MyBatis-Plus 自动转为逻辑删除） */
+    /** 修改用户（含平行越权校验） */
+    @PutMapping("/update")
+    @PreAuthorize("@ss.hasPermi('sys:user:update')")
+    public R<Void> update(@RequestBody SysUser user) {
+        userService.updateUser(user);
+        return R.ok();
+    }
+
+    /** 删除用户（含平行越权校验） */
     @DeleteMapping("/{id}")
     @PreAuthorize("@ss.hasPermi('sys:user:delete')")
     public R<Void> delete(@PathVariable Long id) {
-        userService.removeById(id);
+        userService.deleteUser(id);
         return R.ok();
     }
 
@@ -54,14 +62,6 @@ public class SysUserController {
     @PreAuthorize("@ss.hasPermi('sys:user:assign')")
     public R<Void> assignRole(@RequestBody UserRoleAssignRequest request) {
         userService.assignRoleToUser(request.getUserId(), request.getRoleIds());
-        return R.ok();
-    }
-
-    /** 修改用户 */
-    @PutMapping("/update")
-    @PreAuthorize("@ss.hasPermi('sys:user:update')")
-    public R<Void> update(@RequestBody SysUser user) {
-        userService.updateById(user);
         return R.ok();
     }
 }

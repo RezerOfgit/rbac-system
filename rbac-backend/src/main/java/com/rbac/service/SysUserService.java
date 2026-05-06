@@ -14,4 +14,10 @@ public interface SysUserService extends IService<SysUser> {
 
     /** 为用户分配角色 */
     void assignRoleToUser(Long userId, List<Long> roleIds);
+
+    /** 修改用户（含平行越权校验） */
+    boolean updateUser(SysUser user);
+
+    /** 删除用户（含平行越权校验） */
+    boolean deleteUser(Long userId);
 }
