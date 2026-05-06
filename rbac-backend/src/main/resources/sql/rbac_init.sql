@@ -93,6 +93,15 @@ VALUES (2, '用户管理', 1, 1, '/system/user', 'C', 'sys:user:list', 'admin');
 INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`)
 VALUES (3, '角色管理', 1, 2, '/system/role', 'C', 'sys:role:list', 'admin');
 
+INSERT INTO `sys_menu` (`id`,`menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`)
+VALUES ('用户修改', 2, 3, '', 'F', 'sys:user:update', 'admin');
+
+INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`)
+VALUES (5, '用户删除', 2, 4, '', 'F', 'sys:user:delete', 'admin');
+
+INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `order_num`, `path`, `menu_type`, `perms`, `create_by`)
+VALUES (6, '用户查询', 2, 5, '', 'F', 'sys:user:list', 'admin');
+
 -- 3.3 普通测试角色
 INSERT INTO `sys_role` (`id`, `role_name`, `role_key`, `create_by`)
 VALUES (2, '普通员工', 'common', 'admin');

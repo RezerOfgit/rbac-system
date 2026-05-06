@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -19,14 +20,15 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     // jjwt 0.11.x 要求 HMAC-SHA256 密钥长度 >= 256 bit
-    private final String SECRET = "RbacSystemSuperSecretKeyWithMoreThan32Characters";
+    @Value("${jwt.secret}")
+    private String secret;
 
     /** 过期时间（毫秒），当前为 24 小时 */
     private final long EXPIRATION = 86400000L;
 
     /** 生成安全的签名密钥 */
     private SecretKey getSigningKey() {
-        byte[] keyBytes = SECRET.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

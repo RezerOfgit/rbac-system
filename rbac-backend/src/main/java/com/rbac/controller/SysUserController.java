@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 用户管理接口，提供用户的增删查及角色分配。
+ * 用户管理接口，提供用户的增删查改及角色分配。
  * @author Re-zero
  * @version 1.0
  */
@@ -54,6 +54,14 @@ public class SysUserController {
     @PreAuthorize("@ss.hasPermi('sys:user:assign')")
     public R<Void> assignRole(@RequestBody UserRoleAssignRequest request) {
         userService.assignRoleToUser(request.getUserId(), request.getRoleIds());
+        return R.ok();
+    }
+
+    /** 修改用户 */
+    @PutMapping("/update")
+    @PreAuthorize("@ss.hasPermi('sys:user:update')")
+    public R<Void> update(@RequestBody SysUser user) {
+        userService.updateById(user);
         return R.ok();
     }
 }
